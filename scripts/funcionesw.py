@@ -37,6 +37,8 @@ def extraer_hora_regex(desde):
         return f"{hora:02d}:{minutos:02d}:{segundos:02d}"
     # Si no se encontró el patrón, devolver None
     return None
+    
+
 
 def vehiculos_xy_texto(row):
     """
