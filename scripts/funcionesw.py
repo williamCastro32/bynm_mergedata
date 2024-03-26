@@ -97,3 +97,66 @@ def vehiculo_xy(row):
         return 'No condicionado'
     
 
+# Esta funcion marcara en una columna los cambios que se hagan a la columna Largo_y
+def rev_amarillos_rosa_text(row):
+    """
+    Esta función se aplica a cada fila del DataFrame para evaluar si se cumplen ciertas condiciones
+    basadas en las columnas 'Número de Vehículo', 'Descripción Novedad_x' y 'PARADAS PLANEADAS'.
+    Según las condiciones cumplidas, devuelve un texto descriptivo correspondiente.
+
+    Parámetros:
+    row (pandas.Series): Una fila del DataFrame que contiene los datos de la bitácora.
+
+    Retorna:
+    str: Un texto descriptivo basado en las condiciones especificadas.
+
+    Detalles de la lógica:
+    - Si 'Número de Vehículo' no es NaN y 'Descripción Novedad_x' no es NaN, se evalúan las condiciones.
+    - Si 'Descripción Novedad_x' contiene al menos uno de los elementos de la lista 'amarillos',
+      se procede a realizar búsquedas específicas en 'Descripción Novedad_x'.
+    - Se utilizan expresiones regulares para buscar patrones relacionados con 'INGRESO', 'SALIDAS' y 'CANCELACION'
+      seguidos del número de parada en 'Descripción Novedad_x'.
+    - Dependiendo de los resultados de las búsquedas y de los valores en 'PARADAS PLANEADAS', se devuelve un texto
+      descriptivo que indica cómo se debe manejar el valor de 'Largo' en esa fila.
+
+    """
+    if pd.notna(row['Número de Vehículo_x']):
+        if pd.notna(row['Descripción Novedad_x']): 
+            # Casos rosa
+            if isinstance(row['Descripción Novedad_x'], str) and 'Nro. Caso Desvio:' in row['Descripción Novedad_x']:
+                    if row['Largo_y'] == row['Kilometros Programados Plan']:
+                        return 'Se cambia Largo por el k2_if_8'
+                    elif row['Largo_y'] != row['Kilometros Programados Plan']:
+                        if row['Largo_y'] != row['Kilometros Programados-Desvios']:
+                            if row['Largo_y'] < row['Largo_x']:
+                                return 'Se cambia Largo por el k2__9'
+                        else:
+                            'Se mantiene largo_if_10'
+            # Casos Amarillos                
+            elif isinstance(amarillos, list) and any(isinstance(amarillo, str) and amarillo in row['Descripción Novedad_x'] for amarillo in amarillos):
+                ingreso_match = re.search(r'INGRESO.*?Nro\. Parada:\s*(\d{1,3})', row['Descripción Novedad_x'])
+                salida_match = re.search(r'SALIDAS.*?Nro\. Parada:\s*(\d{1,3})', row['Descripción Novedad_x'])
+                cancelacion_match = re.search(r'CANCELACION.*?Nro\. Parada:\s*(\d{1,3})', row['Descripción Novedad_x'])       
+                if ingreso_match and int(ingreso_match.group(1)) == 1 and int(row['PARADAS PLANEADAS']) != 1:
+                    return 'Se cambia Largo por el k2_if1'
+                elif ingreso_match and int(ingreso_match.group(1)) != 1:
+                    return 'Se cambia Largo por el k2_if2'
+                elif salida_match and int(salida_match.group(1)) != int(row['PARADAS PLANEADAS']):
+                    return 'Se cambia Largo por el k2_if3'
+                elif salida_match and int(salida_match.group(1)) == int(row['PARADAS PLANEADAS']):
+                    return 'Se mantiene largo_if4'
+                elif cancelacion_match and int(cancelacion_match.group(1)) != int(row['PARADAS PLANEADAS']):
+                    return 'Se cambia Largo por el k2_if5'
+                elif cancelacion_match and int(cancelacion_match.group(1)) == int(row['PARADAS PLANEADAS']):
+                    return 'Se mantiene largo_if_6'
+                else:
+                    return 'Se mantiene largo_if7'                       
+            else:
+                return 'Se mantiene largo_if_11'
+        else:
+            return 'Se mantiene largo_if_12' 
+    else:
+        if pd.notna(row['Desde_y']):
+            return  'casos verde'
+
+
