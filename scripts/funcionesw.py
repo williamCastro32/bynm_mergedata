@@ -37,6 +37,29 @@ def extraer_hora_regex(desde):
         return f"{hora:02d}:{minutos:02d}:{segundos:02d}"
     # Si no se encontró el patrón, devolver None
     return None
+
+def extraer_hora_regex_mod(desde):
+    """
+    Esta funcion extrae la hora en formato hh de una cadena utilizando expresiones regulares.
+
+    Parameters:
+    desde (str): Cadena que contiene la hora en formato hh:mm:ss.
+
+    Returns:
+    str or None: La hora extraída en formato hh si se encuentra en la cadena, None si no se encuentra.
+    """
+    # Expresión regular para encontrar el patrón de hora (hh)
+    patron_hora = r'(\d{2})'
+    # Buscar el patrón en la cadena
+    resultado = re.search(patron_hora, str(desde))
+    # Si se encontró el patrón
+    if resultado:
+        # Extraer la hora encontrada
+        hora = int(resultado.group(1))
+        # Devolver la hora en formato hh
+        return f"{hora:02d}"
+    # Si no se encontró el patrón, devolver None
+    return None
     
 
 
@@ -84,7 +107,6 @@ def vehiculo_xy(row):
     - Si el número de vehículo es diferente del número de secuencia de carro, devuelve el número de vehículo.
     - En cualquier otro caso, devuelve el mismo valor de número de secuencia de carro.
     """
-    
     if pd.isna(row['Número de Vehículo']) and pd.notna(row['Número de secuencia de carro']): 
         return  row['Número de secuencia de carro']
     elif pd.notna(row['Número de Vehículo']) and pd.isna(row['Número de secuencia de carro']):
